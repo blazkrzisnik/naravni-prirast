@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Naravni Prirast — Demografija za vsakogar</title>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#FDFCF8;--surface:#F5F2EA;--card:#FFFFFE;
+  --ink:#1A1917;--muted:#6B6860;--accent:#1D9E75;--accent2:#0F6E56;
+  --border:#D3D1C7;--warn:#BA7517;--danger:#A32D2D
+}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);line-height:1.6;min-height:100vh}
+
+/* HERO */
+.hero{background:var(--accent2);color:#fff;padding:3.5rem 2rem 3rem;text-align:center;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:-80px;left:-80px;width:260px;height:260px;border-radius:50%;background:rgba(255,255,255,0.06)}
+.hero::after{content:'';position:absolute;bottom:-50px;right:-50px;width:200px;height:200px;border-radius:50%;background:rgba(255,255,255,0.04)}
+.hero h1{font-family:'Lora',serif;font-size:2.6rem;font-weight:600;margin-bottom:.6rem;position:relative}
+.hero p{font-size:1.05rem;opacity:.85;max-width:520px;margin:0 auto;position:relative}
+
+/* NAV */
+nav{background:var(--surface);border-bottom:1px solid var(--border);display:flex;justify-content:center;gap:0;overflow-x:auto;position:sticky;top:0;z-index:100}
+nav a{padding:.75rem 1.3rem;font-size:.875rem;color:var(--muted);text-decoration:none;border-bottom:2px solid transparent;white-space:nowrap;transition:all .2s;font-family:'DM Sans',sans-serif}
+nav a:hover{color:var(--ink)}
+nav a.active{color:var(--accent2);border-bottom-color:var(--accent2);font-weight:500}
+
+/* SECTIONS */
+.section{max-width:780px;margin:0 auto;padding:2.8rem 1.5rem}
+.section+.section{border-top:1px solid var(--border)}
+
+h2{font-family:'Lora',serif;font-size:1.6rem;font-weight:600;margin-bottom:1rem;color:var(--ink)}
+h3{font-size:1rem;font-weight:500;margin-bottom:.5rem;color:var(--ink);margin-top:1.25rem}
+p{font-size:.95rem;color:var(--muted);margin-bottom:1rem}
+p:last-child{margin-bottom:0}
+
+/* FORMULA BOX */
+.formula-box{background:var(--ink);color:#fff;border-radius:12px;padding:1.5rem 1.75rem;margin:1.25rem 0;text-align:center}
+.formula-box .formula{font-family:'Lora',serif;font-size:1.5rem;color:#9FE1CB;margin-bottom:.5rem;letter-spacing:.02em}
+.formula-box .legend{font-size:.8rem;opacity:.6;line-height:1.8}
+
+/* CARDS GRID */
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin:1.25rem 0}
+.card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1rem 1.25rem}
+.card .label{font-size:.75rem;color:var(--muted);margin-bottom:.3rem;text-transform:uppercase;letter-spacing:.04em}
+.card .val{font-size:1.65rem;font-weight:500;color:var(--ink)}
+.card .sub{font-size:.78rem;color:var(--muted);margin-top:.2rem}
+.card.green .val{color:var(--accent2)}
+.card.red .val{color:var(--danger)}
+.card.amber .val{color:var(--warn)}
+
+/* SLIDER */
+.slider-group{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.25rem 1.5rem;margin:1.25rem 0}
+.slider-row{display:flex;align-items:center;gap:12px;margin-bottom:.85rem}
+.slider-row:last-child{margin-bottom:0}
+.slider-row label{font-size:.85rem;color:var(--muted);min-width:140px}
+.slider-row input[type=range]{flex:1;accent-color:var(--accent2);cursor:pointer}
+.slider-row .readout{font-size:.85rem;font-weight:500;color:var(--ink);min-width:70px;text-align:right}
+
+/* RESULT BIG */
+.result-big{text-align:center;padding:1.75rem;background:var(--surface);border-radius:12px;margin:1rem 0;border:1px solid var(--border)}
+.result-big .num{font-family:'Lora',serif;font-size:3rem;font-weight:600;transition:color .3s}
+.result-big .unit{font-size:.85rem;color:var(--muted);margin-top:.2rem}
+
+/* MINI STATS */
+.mini-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:.75rem}
+.mini-stat{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:.75rem 1rem;text-align:center}
+.mini-stat .ms-label{font-size:.72rem;color:var(--muted);margin-bottom:.2rem}
+.mini-stat .ms-val{font-size:1.2rem;font-weight:500;color:var(--ink)}
+
+/* BAR CHART */
+.bar-chart{margin:1.5rem 0}
+.bar-row{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+.bar-row .blabel{font-size:.82rem;color:var(--muted);min-width:70px;text-align:right}
+.bar-track{flex:1;background:var(--surface);border-radius:6px;height:26px;overflow:hidden;border:1px solid var(--border)}
+.bar-fill{height:100%;border-radius:6px;display:flex;align-items:center;padding:0 10px;font-size:.75rem;font-weight:500;color:#fff;transition:width .5s ease;min-width:8px}
+.bar-fill.g{background:var(--accent)}
+.bar-fill.r{background:#E24B4A}
+
+/* BADGES */
+.badge{display:inline-block;padding:3px 10px;border-radius:6px;font-size:.75rem;font-weight:500;margin-bottom:.5rem}
+.badge.pos{background:#E1F5EE;color:#0F6E56}
+.badge.neg{background:#FCEBEB;color:#A32D2D}
+.badge.neu{background:#FAEEDA;color:#854F0B}
+
+/* EXAMPLES */
+.example-pill{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:.9rem 1.1rem;margin-bottom:.75rem}
+.example-pill strong{color:var(--ink);display:block;margin-bottom:.25rem;font-size:.95rem}
+.example-pill p{font-size:.85rem;margin:0}
+
+/* INFO BOX */
+.info-box{background:#E1F5EE;border:1px solid #9FE1CB;border-radius:10px;padding:1rem 1.25rem;margin:1.25rem 0}
+.info-box p{color:#0F6E56;font-size:.88rem;margin:0}
+
+/* FOOTER */
+footer{background:var(--ink);color:rgba(255,255,255,.45);text-align:center;padding:2rem 1rem;font-size:.82rem;margin-top:2rem}
+footer a{color:rgba(255,255,255,.6);text-decoration:none}
+
+@media(max-width:520px){
+  .hero h1{font-size:1.8rem}
+  .mini-stats{grid-template-columns:repeat(2,1fr)}
+  .slider-row label{min-width:110px;font-size:.8rem}
+  nav a{padding:.65rem .9rem;font-size:.8rem}
+}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <h1>Naravni prirast</h1>
+  <p>Razumevanje rasti in upada prebivalstva skozi rodnost in umrljivost</p>
+</div>
+
+<nav id="nav">
+  <a class="active" href="#def" onclick="return navTo('def',this)">Definicija</a>
+  <a href="#formula" onclick="return navTo('formula',this)">Formula</a>
+  <a href="#calc" onclick="return navTo('calc',this)">Kalkulator</a>
+  <a href="#primeri" onclick="return navTo('primeri',this)">Primeri</a>
+  <a href="#slovenija" onclick="return navTo('slovenija',this)">Slovenija</a>
+</nav>
+
+<!-- DEFINICIJA -->
+<div class="section" id="def">
+  <h2>Kaj je naravni prirast?</h2>
+  <p>Naravni prirast je razlika med številom <strong>rojstev</strong> in številom <strong>smrti</strong> v določenem obdobju in območju. Pove nam, ali se prebivalstvo povečuje ali zmanjšuje zgolj na podlagi bioloških dejavnikov — brez upoštevanja selitev.</p>
+  <p>To je eden temeljnih kazalnikov demografske dinamike in se pogosto izračunava za eno leto na 1.000 prebivalcev.</p>
+  <div class="cards">
+    <div class="card green">
+      <div class="label">Pozitiven prirast</div>
+      <div class="val">+ NP</div>
+      <div class="sub">Rojstva &gt; Smrti → prebivalstvo raste</div>
+    </div>
+    <div class="card red">
+      <div class="label">Negativen prirast</div>
+      <div class="val">− NP</div>
+      <div class="sub">Smrti &gt; Rojstva → prebivalstvo upada</div>
+    </div>
+    <div class="card amber">
+      <div class="label">Ničelni prirast</div>
+      <div class="val">NP = 0</div>
+      <div class="sub">Rojstva = Smrti → stagnacija</div>
+    </div>
+  </div>
+  <div class="info-box">
+    <p>⚠️ Naravni prirast <strong>ne upošteva selitev</strong>. Skupni prirast prebivalstva = naravni prirast + selitveni saldo.</p>
+  </div>
+</div>
+
+<!-- FORMULA -->
+<div class="section" id="formula">
+  <h2>Formula za izračun</h2>
+  <p>Naravni prirast se izraža na dva načina:</p>
+
+  <h3>1. Absolutni naravni prirast (v osebah)</h3>
+  <div class="formula-box">
+    <div class="formula">NP = R − U</div>
+    <div class="legend">NP = naravni prirast &nbsp;|&nbsp; R = število rojstev &nbsp;|&nbsp; U = število umrlih</div>
+  </div>
+
+  <h3>2. Stopnja naravnega prirasta (na 1.000 prebivalcev)</h3>
+  <div class="formula-box">
+    <div class="formula">SNP = (R − U) ÷ P × 1.000</div>
+    <div class="legend">SNP = stopnja naravnega prirasta (v ‰) &nbsp;|&nbsp; P = srednje letno število prebivalcev</div>
+  </div>
+
+  <p>Stopnja naravnega prirasta nam omogoča primerjavo med različno velikimi državami ali regijami, saj upošteva velikost populacije. Izraža se v promilih (‰).</p>
+
+  <h3>Primer izračuna</h3>
+  <p>Država ima 1.000.000 prebivalcev, v letu X se je rodilo 12.000 otrok, umrlo pa 9.500 ljudi:</p>
+  <div class="formula-box">
+    <div class="formula">NP = 12.000 − 9.500 = 2.500</div>
+    <div class="legend">SNP = 2.500 ÷ 1.000.000 × 1.000 = <span style="color:#9FE1CB;font-weight:600">2,5 ‰</span></div>
+  </div>
+</div>
+
+<!-- KALKULATOR -->
+<div class="section" id="calc">
+  <h2>Interaktivni kalkulator</h2>
+  <p>Prilagodite vrednosti z drsniki in takoj vidite rezultat:</p>
+
+  <div class="slider-group">
+    <div class="slider-row">
+      <label for="r">Število rojstev (R)</label>
+      <input type="range" id="r" min="0" max="50000" value="20000" step="100" oninput="calc()">
+      <span class="readout" id="r-out">20.000</span>
+    </div>
+    <div class="slider-row">
+      <label for="u">Število umrlih (U)</label>
+      <input type="range" id="u" min="0" max="50000" value="15000" step="100" oninput="calc()">
+      <span class="readout" id="u-out">15.000</span>
+    </div>
+    <div class="slider-row">
+      <label for="p">Število preb. (P)</label>
+      <input type="range" id="p" min="10000" max="10000000" value="2100000" step="10000" oninput="calc()">
+      <span class="readout" id="p-out">2.100.000</span>
+    </div>
+  </div>
+
+  <div class="result-big">
+    <div style="font-size:.85rem;color:var(--muted);margin-bottom:.25rem">Absolutni naravni prirast</div>
+    <div class="num" id="abs-res" style="color:var(--accent2)">+5.000</div>
+    <div class="unit">oseb letno</div>
+  </div>
+
+  <div class="mini-stats">
+    <div class="mini-stat">
+      <div class="ms-label">Stopnja NP</div>
+      <div class="ms-val" id="snp-res">2,4 ‰</div>
+    </div>
+    <div class="mini-stat">
+      <div class="ms-label">Stopnja rodnosti</div>
+      <div class="ms-val" id="sr-res">9,5 ‰</div>
+    </div>
+    <div class="mini-stat">
+      <div class="ms-label">Stopnja umrljivosti</div>
+      <div class="ms-val" id="su-res">7,1 ‰</div>
+    </div>
+  </div>
+
+  <div class="bar-chart" style="margin-top:1.5rem">
+    <div class="bar-row">
+      <span class="blabel">Rojstva</span>
+      <div class="bar-track"><div class="bar-fill g" id="bar-r" style="width:50%">20.000</div></div>
+    </div>
+    <div class="bar-row">
+      <span class="blabel">Smrti</span>
+      <div class="bar-track"><div class="bar-fill r" id="bar-u" style="width:37%">15.000</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- PRIMERI -->
+<div class="section" id="primeri">
+  <h2>Primeri iz sveta</h2>
+  <p>Naravni prirast se med državami močno razlikuje glede na stopnjo razvitosti, kulturo in starostno strukturo:</p>
+
+  <div class="example-pill">
+    <span class="badge pos">Pozitiven NP</span>
+    <strong>Niger (Afrika)</strong>
+    <p>Rodnost ~47 ‰, umrljivost ~9 ‰ → NP ≈ +38 ‰. Ena od najhitreje rastočih populacij na svetu, visoka rodnost ob padajoči umrljivosti.</p>
+  </div>
+
+  <div class="example-pill">
+    <span class="badge pos">Pozitiven NP</span>
+    <strong>Indija</strong>
+    <p>Rodnost ~18 ‰, umrljivost ~7 ‰ → NP ≈ +11 ‰. Kljub upadanju rodnosti ostaja prirast pozitiven zaradi ogromne populacijske baze.</p>
+  </div>
+
+  <div class="example-pill">
+    <span class="badge neg">Negativen NP</span>
+    <strong>Japonska</strong>
+    <p>Rodnost ~7 ‰, umrljivost ~12 ‰ → NP ≈ −5 ‰. Razvita država z izjemno nizko rodnostjo in hitrim staranjem populacije.</p>
+  </div>
+
+  <div class="example-pill">
+    <span class="badge neg">Negativen NP</span>
+    <strong>Bolgarija</strong>
+    <p>Rodnost ~8 ‰, umrljivost ~15 ‰ → NP ≈ −7 ‰. Starajoče se prebivalstvo, nizka rodnost, visoka emigracija mlajše generacije.</p>
+  </div>
+
+  <div class="example-pill">
+    <span class="badge neu">Skoraj ničelni NP</span>
+    <strong>Francija</strong>
+    <p>Rodnost ~11 ‰, umrljivost ~9 ‰ → NP ≈ +2 ‰. Med redkimi zahodnoevropskimi državami z relativno visoko rodnostjo.</p>
+  </div>
+</div>
+
+<!-- SLOVENIJA -->
+<div class="section" id="slovenija">
+  <h2>Slovenija</h2>
+  <p>Slovenija je po podatkih SURS-a v zadnjih letih beležila negativen naravni prirast — število umrlih presega število rojenih. Kljub temu celotno število prebivalcev ostaja stabilno ali rahlo narašča, kar je posledica priseljevanja.</p>
+
+  <div class="cards">
+    <div class="card">
+      <div class="label">Rodnost (2022)</div>
+      <div class="val">~8,9 ‰</div>
+    </div>
+    <div class="card red">
+      <div class="label">Umrljivost (2022)</div>
+      <div class="val">~10,5 ‰</div>
+    </div>
+    <div class="card red">
+      <div class="label">Naravni prirast</div>
+      <div class="val">−1,6 ‰</div>
+    </div>
+    <div class="card amber">
+      <div class="label">Skupni prirast</div>
+      <div class="val">pozit.*</div>
+    </div>
+  </div>
+
+  <p style="font-size:.82rem;color:var(--muted)">* Skupni prirast (naravni + selitveni) je bil v večini let pozitiven zahvaljujoč priseljevanju.</p>
+
+  <p>Slovenija sodi med evropske države z nižjo rodnostjo in starajočim se prebivalstvom — podoben trend beležijo Hrvaška, Avstrija in Italija. Ključni izziv prihodnosti bo ohranjanje delovnega kontingenta in vzdržnost pokojninskega sistema.</p>
+
+  <div class="info-box">
+    <p>Vir: Statistični urad RS (SURS), Eurostat. Za najnovejše podatke obiščite <a href="https://www.stat.si" target="_blank" style="color:#0F6E56;font-weight:500">www.stat.si</a>.</p>
+  </div>
+</div>
+
+<footer>
+  <p>Naravni prirast — izobraževalna stran &nbsp;·&nbsp; Podatki: SURS, Eurostat, World Bank</p>
+  <p style="margin-top:.5rem;opacity:.5">Zgrajeno za namen splošnega izobraževanja</p>
+</footer>
+
+<script>
+function fmt(n){return Math.round(n).toLocaleString('sl-SI')}
+
+function navTo(id, el){
+  document.querySelectorAll('nav a').forEach(a=>a.classList.remove('active'));
+  el.classList.add('active');
+  const target=document.getElementById(id);
+  if(target){
+    const offset=document.getElementById('nav').offsetHeight;
+    const top=target.getBoundingClientRect().top+window.scrollY-offset-16;
+    window.scrollTo({top,behavior:'smooth'});
+  }
+  return false;
+}
+
+function calc(){
+  const r=+document.getElementById('r').value;
+  const u=+document.getElementById('u').value;
+  const p=+document.getElementById('p').value;
+
+  document.getElementById('r-out').textContent=fmt(r);
+  document.getElementById('u-out').textContent=fmt(u);
+  document.getElementById('p-out').textContent=fmt(p);
+
+  const np=r-u;
+  const snp=(np/p*1000);
+  const sr=(r/p*1000);
+  const su=(u/p*1000);
+
+  const el=document.getElementById('abs-res');
+  el.textContent=(np>=0?'+':'')+fmt(np);
+  el.style.color=np>=0?'var(--accent2)':'#A32D2D';
+
+  document.getElementById('snp-res').textContent=(snp>=0?'+':'')+snp.toFixed(1)+' ‰';
+  document.getElementById('sr-res').textContent=sr.toFixed(1)+' ‰';
+  document.getElementById('su-res').textContent=su.toFixed(1)+' ‰';
+
+  const mx=Math.max(r,u,1);
+  const rw=Math.max(4,Math.round(r/mx*94));
+  const uw=Math.max(4,Math.round(u/mx*94));
+  const br=document.getElementById('bar-r');
+  const bu=document.getElementById('bar-u');
+  br.style.width=rw+'%';
+  br.textContent=fmt(r);
+  bu.style.width=uw+'%';
+  bu.textContent=fmt(u);
+}
+
+calc();
+
+// Highlight active nav on scroll
+window.addEventListener('scroll',function(){
+  const sections=['def','formula','calc','primeri','slovenija'];
+  const offset=document.getElementById('nav').offsetHeight+30;
+  let current='def';
+  sections.forEach(id=>{
+    const el=document.getElementById(id);
+    if(el&&el.getBoundingClientRect().top<=offset) current=id;
+  });
+  document.querySelectorAll('nav a').forEach(a=>{
+    a.classList.toggle('active',a.getAttribute('href')==='#'+current);
+  });
+});
+</script>
+</body>
+</html>
